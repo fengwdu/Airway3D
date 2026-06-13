@@ -1,0 +1,18 @@
+--extra-index-url https://download.pytorch.org/whl/cu130
+
+numpy
+opencv-python
+PyQt6
+trimesh
+pyrender
+scipy
+smplx
+uniface
+batch-face
+timm
+yacs
+tqdm
+Pillow
+torch
+torchvision
+pyorbbecsdk2
