@@ -7,7 +7,7 @@ import torch
 import torch.nn as nn
 import trimesh
 
-from core.camera import Camera
+from core.camera import Camera, backprojection_inverse
 
 # chumpy still imports aliases removed from recent NumPy versions.
 # Patch before importing FLAME/chumpy.
@@ -33,7 +33,10 @@ from third_party.flame import FLAME, FlameConfig
 ALIGN_LMK_RANGE_68 = (17, 48)
 ALIGN_EXCLUDED_LMK_68 = {17, 18, 19, 24, 25, 26}
 SEMANTIC_LMK_68 = [8, 21, 22, 33, 50, 51, 52, 56, 57, 58]
+# 0-based 68-point outer-lip pairs used only in Stage1 for coarse stabilization.
 MOUTH_DISTANCE_PAIRS_68 = [(50, 58), (51, 57), (52, 56)]
+# 0-based 68-point inner-lip pairs: image labels 62-68, 63-67, 64-66.
+INNER_LIP_DISTANCE_PAIRS_68 = [(61, 67), (62, 66), (63, 65)]
 NECK0_INIT = -0.5
 POSE_ALLOWED_NECK0_JAW0 = (0, 3)
 
@@ -76,19 +79,22 @@ def _export_points_obj(path, points):
                 f.write(f"v {p[0]:.8f} {p[1]:.8f} {p[2]:.8f}\n")
 
 
-def _export_open_mouth_lmk_debug(out_dir, gt_open, pred_open):
+def _export_open_mouth_lmk_debug(out_dir, gt_open, pred_open,
+                                 gt2d_open=None, pred2d_open=None):
     os.makedirs(out_dir, exist_ok=True)
     _export_points_obj(os.path.join(out_dir, "lmk_open_gt.obj"), gt_open)
     _export_points_obj(os.path.join(out_dir, "lmk_open_flame_pred.obj"), pred_open)
 
-    gt_dist = float(np.linalg.norm(gt_open[51] - gt_open[57]))
-    pred_dist = float(np.linalg.norm(pred_open[51] - pred_open[57]))
     with open(os.path.join(out_dir, "mouth_lmk_distances.txt"), "w", encoding="utf-8") as f:
-        f.write("landmark_pair: 51-57\n")
-        f.write(f"gt_open_distance_m: {gt_dist:.8f}\n")
-        f.write(f"gt_open_distance_cm: {gt_dist * 100.0:.4f}\n")
-        f.write(f"flame_open_distance_m: {pred_dist:.8f}\n")
-        f.write(f"flame_open_distance_cm: {pred_dist * 100.0:.4f}\n")
+        f.write("constraint: projected_inner_lip_image_distance_px\n")
+        for i, j in INNER_LIP_DISTANCE_PAIRS_68:
+            f.write(f"landmark_pair_0based: {i}-{j}\n")
+            if gt2d_open is not None:
+                gt2d_dist = float(np.linalg.norm(gt2d_open[i] - gt2d_open[j]))
+                f.write(f"gt_open_image_distance_px: {gt2d_dist:.4f}\n")
+            if pred2d_open is not None:
+                pred2d_dist = float(np.linalg.norm(pred2d_open[i] - pred2d_open[j]))
+                f.write(f"flame_open_projected_distance_px: {pred2d_dist:.4f}\n")
 
 
 def _sync_if_cuda(device):
@@ -204,6 +210,107 @@ def _forward_observation_space(flame, shape_params, expr_params, pose_params,
     return verts
 
 
+def _project_observation_points_to_image(points, camera, eps=1e-6):
+    """
+    Observation/model coords use Y-up, Z-back. Convert back to camera coords
+    (Y-down, Z-forward), then project to image pixels.
+    """
+    points_cam = torch.stack(
+        [points[..., 0], -points[..., 1], (-points[..., 2]).clamp_min(eps)],
+        dim=-1,
+    )
+    return backprojection_inverse(points_cam, camera)
+
+
+def _precompute_mouth_image_targets(lmk2d_gt_list):
+    device = lmk2d_gt_list[0].device
+    pair_ids = torch.tensor(INNER_LIP_DISTANCE_PAIRS_68, device=device, dtype=torch.long)
+    frame_ids = []
+    kept_pairs = []
+    distances = []
+
+    for b, gt2d in enumerate(lmk2d_gt_list):
+        pair_points = gt2d[pair_ids]
+        valid = torch.isfinite(pair_points).all(dim=(1, 2))
+        if bool(valid.any()):
+            valid_pairs = pair_ids[valid]
+            frame_ids.append(torch.full((valid_pairs.shape[0],), b, device=device, dtype=torch.long))
+            kept_pairs.append(valid_pairs)
+            distances.append(torch.linalg.norm(gt2d[valid_pairs[:, 0]] - gt2d[valid_pairs[:, 1]], dim=1))
+
+    if not distances:
+        return {
+            "frame_ids": torch.empty((0,), device=device, dtype=torch.long),
+            "pair_ids": torch.empty((0, 2), device=device, dtype=torch.long),
+            "distances": torch.empty((0,), device=device, dtype=lmk2d_gt_list[0].dtype),
+        }
+
+    return {
+        "frame_ids": torch.cat(frame_ids),
+        "pair_ids": torch.cat(kept_pairs),
+        "distances": torch.cat(distances),
+    }
+
+
+def _precompute_mouth_3d_targets(lmk_gt_list, lmk_mask_list):
+    device = lmk_gt_list[0].device
+    pair_ids = torch.tensor(MOUTH_DISTANCE_PAIRS_68, device=device, dtype=torch.long)
+    frame_ids = []
+    kept_pairs = []
+    distances = []
+
+    for b, (gt, mask) in enumerate(zip(lmk_gt_list, lmk_mask_list)):
+        valid = mask[pair_ids].all(dim=1) & torch.isfinite(gt[pair_ids]).all(dim=(1, 2))
+        if bool(valid.any()):
+            valid_pairs = pair_ids[valid]
+            frame_ids.append(torch.full((valid_pairs.shape[0],), b, device=device, dtype=torch.long))
+            kept_pairs.append(valid_pairs)
+            distances.append(torch.linalg.norm(gt[valid_pairs[:, 0]] - gt[valid_pairs[:, 1]], dim=1))
+
+    if not distances:
+        return {
+            "frame_ids": torch.empty((0,), device=device, dtype=torch.long),
+            "pair_ids": torch.empty((0, 2), device=device, dtype=torch.long),
+            "distances": torch.empty((0,), device=device, dtype=lmk_gt_list[0].dtype),
+        }
+
+    return {
+        "frame_ids": torch.cat(frame_ids),
+        "pair_ids": torch.cat(kept_pairs),
+        "distances": torch.cat(distances),
+    }
+
+
+def _precompute_semantic_landmark_targets(lmk_gt_list, lmk_mask_list):
+    device = lmk_gt_list[0].device
+    semantic_ids = torch.tensor(SEMANTIC_LMK_68, device=device, dtype=torch.long)
+    frame_ids = []
+    landmark_ids = []
+    targets = []
+
+    for b, (gt, mask) in enumerate(zip(lmk_gt_list, lmk_mask_list)):
+        valid = mask[semantic_ids] & torch.isfinite(gt[semantic_ids]).all(dim=1)
+        if bool(valid.any()):
+            valid_ids = semantic_ids[valid]
+            frame_ids.append(torch.full((valid_ids.shape[0],), b, device=device, dtype=torch.long))
+            landmark_ids.append(valid_ids)
+            targets.append(gt[valid_ids])
+
+    if not targets:
+        return {
+            "frame_ids": torch.empty((0,), device=device, dtype=torch.long),
+            "landmark_ids": torch.empty((0,), device=device, dtype=torch.long),
+            "targets": torch.empty((0, 3), device=device, dtype=lmk_gt_list[0].dtype),
+        }
+
+    return {
+        "frame_ids": torch.cat(frame_ids),
+        "landmark_ids": torch.cat(landmark_ids),
+        "targets": torch.cat(targets),
+    }
+
+
+
 @torch.no_grad()
 def _update_correspondences(flame, shape_params, expr_params, pose_params,
                             trans_params, ptcloud_list, rotations, translations):
@@ -230,34 +337,58 @@ def _frozen_vertex_normals(flame, shape_params, expr_params, pose_params,
     ], dim=0)
 
 
-def _landmark_constraint_loss(landmarks, lmk_gt_list, lmk_mask_list,
-                              weights, use_mouth_distance, use_landmark_points):
+def _mouth_image_constraint_loss(landmarks, lmk2d_gt_list, camera, weights,
+                                 use_mouth_image_distance, mouth_image_target=None):
     loss = landmarks.new_zeros(())
 
-    if use_mouth_distance and weights.get("mouth_distance", 0.0) > 0:
-        # 闭口帧把三对内唇距离压向 0；张口帧跟随真实 3D 内唇距离。
-        mouth_losses = []
-        for b, (gt, mask) in enumerate(zip(lmk_gt_list, lmk_mask_list)):
-            for i, j in MOUTH_DISTANCE_PAIRS_68:
-                if bool(mask[i]) and bool(mask[j]):
-                    pred = torch.linalg.norm(landmarks[b, i] - landmarks[b, j])
-                    if b == 0:
-                        target = pred.new_zeros(())
-                    else:
-                        target = torch.linalg.norm(gt[i] - gt[j])
-                    if torch.isfinite(target):
-                        mouth_losses.append((pred - target).pow(2))
-        if mouth_losses:
-            loss = loss + weights["mouth_distance"] * torch.stack(mouth_losses).mean()
+    if (
+        use_mouth_image_distance
+        and weights.get("mouth_image_distance", 0.0) > 0
+        and mouth_image_target is not None
+    ):
+        # 用 FLAME 网格内唇点投影后的图像平面距离，跟随照片识别出的 2D 内唇距离。
+        projected = _project_observation_points_to_image(landmarks, camera)
+        frame_ids = mouth_image_target["frame_ids"]
+        pair_ids = mouth_image_target["pair_ids"]
+        targets = mouth_image_target["distances"]
+        if targets.numel() > 0:
+            pred_i = projected[frame_ids, pair_ids[:, 0]]
+            pred_j = projected[frame_ids, pair_ids[:, 1]]
+            pred = torch.linalg.norm(pred_i - pred_j, dim=1)
+            loss = loss + weights["mouth_image_distance"] * (pred - targets).pow(2).mean()
 
-    if use_landmark_points and weights.get("landmark_points", 0.0) > 0:
-        for b, (gt, mask) in enumerate(zip(lmk_gt_list, lmk_mask_list)):
-            idx = torch.tensor(SEMANTIC_LMK_68, device=landmarks.device, dtype=torch.long)
-            valid = mask[idx] & torch.isfinite(gt[idx]).all(dim=1)
-            if bool(valid.any()):
-                pred = landmarks[b, idx[valid]]
-                target = gt[idx[valid]]
-                loss = loss + weights["landmark_points"] * (pred - target).pow(2).mean()
+    return loss
+
+
+def _mouth_3d_distance_constraint_loss(landmarks, weights, use_mouth_distance,
+                                       mouth_3d_target=None):
+    loss = landmarks.new_zeros(())
+
+    if use_mouth_distance and weights.get("mouth_distance", 0.0) > 0 and mouth_3d_target is not None:
+        # Stage1: 外唇距离跟随对应帧的反投影 3D 外唇距离，用于粗稳定。
+        frame_ids = mouth_3d_target["frame_ids"]
+        pair_ids = mouth_3d_target["pair_ids"]
+        targets = mouth_3d_target["distances"]
+        if targets.numel() > 0:
+            pred_i = landmarks[frame_ids, pair_ids[:, 0]]
+            pred_j = landmarks[frame_ids, pair_ids[:, 1]]
+            pred = torch.linalg.norm(pred_i - pred_j, dim=1)
+            loss = loss + weights["mouth_distance"] * (pred - targets).pow(2).mean()
+
+    return loss
+
+
+def _semantic_landmark_points_loss(landmarks, weights, use_landmark_points,
+                                   semantic_target=None):
+    loss = landmarks.new_zeros(())
+
+    if use_landmark_points and weights.get("landmark_points", 0.0) > 0 and semantic_target is not None:
+        frame_ids = semantic_target["frame_ids"]
+        landmark_ids = semantic_target["landmark_ids"]
+        targets = semantic_target["targets"]
+        if targets.numel() > 0:
+            pred = landmarks[frame_ids, landmark_ids]
+            loss = loss + weights["landmark_points"] * (pred - targets).pow(2).mean()
 
     return loss
 
@@ -284,7 +415,13 @@ def _code_style_loss(
     vertex_normals=None,
     lmk_gt_list=None,
     lmk_mask_list=None,
+    mouth_3d_target=None,
+    semantic_target=None,
+    lmk2d_gt_list=None,
+    mouth_image_target=None,
+    camera=None,
     use_mouth_distance=False,
+    use_mouth_image_distance=False,
     use_landmark_points=False,
 ):
     """
@@ -316,13 +453,26 @@ def _code_style_loss(
     if weights["expr_reg"] > 0:
         loss = loss + weights["expr_reg"] * expr_params.pow(2).sum()
     if lmk_gt_list is not None and lmk_mask_list is not None:
-        loss = loss + _landmark_constraint_loss(
+        loss = loss + _mouth_3d_distance_constraint_loss(
             landmarks,
-            lmk_gt_list,
-            lmk_mask_list,
             weights,
             use_mouth_distance=use_mouth_distance,
+            mouth_3d_target=mouth_3d_target,
+        )
+        loss = loss + _semantic_landmark_points_loss(
+            landmarks,
+            weights,
             use_landmark_points=use_landmark_points,
+            semantic_target=semantic_target,
+        )
+    if lmk2d_gt_list is not None and camera is not None:
+        loss = loss + _mouth_image_constraint_loss(
+            landmarks,
+            lmk2d_gt_list,
+            camera,
+            weights,
+            use_mouth_image_distance=use_mouth_image_distance,
+            mouth_image_target=mouth_image_target,
         )
     return 0.5 * loss
 
@@ -342,7 +492,13 @@ def _code_style_breakdown(
     vertex_normals=None,
     lmk_gt_list=None,
     lmk_mask_list=None,
+    mouth_3d_target=None,
+    semantic_target=None,
+    lmk2d_gt_list=None,
+    mouth_image_target=None,
+    camera=None,
     use_mouth_distance=False,
+    use_mouth_image_distance=False,
     use_landmark_points=False,
 ):
     verts, landmarks = _forward_observation_space_with_landmarks(
@@ -371,13 +527,26 @@ def _code_style_breakdown(
     loss_expr = 0.5 * weights["expr_reg"] * expr_params.pow(2).sum()
     loss_lmk = verts.new_zeros(())
     if lmk_gt_list is not None and lmk_mask_list is not None:
-        loss_lmk = 0.5 * _landmark_constraint_loss(
+        loss_lmk = loss_lmk + 0.5 * _mouth_3d_distance_constraint_loss(
             landmarks,
-            lmk_gt_list,
-            lmk_mask_list,
             weights,
             use_mouth_distance=use_mouth_distance,
+            mouth_3d_target=mouth_3d_target,
+        )
+        loss_lmk = loss_lmk + 0.5 * _semantic_landmark_points_loss(
+            landmarks,
+            weights,
             use_landmark_points=use_landmark_points,
+            semantic_target=semantic_target,
+        )
+    if lmk2d_gt_list is not None and camera is not None:
+        loss_lmk = loss_lmk + 0.5 * _mouth_image_constraint_loss(
+            landmarks,
+            lmk2d_gt_list,
+            camera,
+            weights,
+            use_mouth_image_distance=use_mouth_image_distance,
+            mouth_image_target=mouth_image_target,
         )
     total = loss_pc + loss_pl + loss_shape + loss_expr + loss_lmk
     return {
@@ -396,7 +565,11 @@ def _run_adam_stage(stage_name, flame, shape_params, expr_params, pose_params,
                     trans_params, ptcloud_fit, rotations, translations, weights,
                     optimizer, outer_iters, inner_iters, tol_loss,
                     lmk_gt_list=None, lmk_mask_list=None,
-                    use_mouth_distance=False, use_landmark_points=False,
+                    mouth_3d_target=None, semantic_target=None,
+                    lmk2d_gt_list=None, mouth_image_target=None, camera=None,
+                    use_mouth_distance=False,
+                    use_mouth_image_distance=False,
+                    use_landmark_points=False,
                     pose_allowed_indices=None):
     for outer in range(outer_iters):
         pc_vertex_ids = _update_correspondences(
@@ -424,7 +597,13 @@ def _run_adam_stage(stage_name, flame, shape_params, expr_params, pose_params,
                 vertex_normals=vertex_normals,
                 lmk_gt_list=lmk_gt_list,
                 lmk_mask_list=lmk_mask_list,
+                mouth_3d_target=mouth_3d_target,
+                semantic_target=semantic_target,
+                lmk2d_gt_list=lmk2d_gt_list,
+                mouth_image_target=mouth_image_target,
+                camera=camera,
                 use_mouth_distance=use_mouth_distance,
+                use_mouth_image_distance=use_mouth_image_distance,
                 use_landmark_points=use_landmark_points,
             )
             loss.backward()
@@ -453,7 +632,13 @@ def _run_adam_stage(stage_name, flame, shape_params, expr_params, pose_params,
             vertex_normals=vertex_normals,
             lmk_gt_list=lmk_gt_list,
             lmk_mask_list=lmk_mask_list,
+            mouth_3d_target=mouth_3d_target,
+            semantic_target=semantic_target,
+            lmk2d_gt_list=lmk2d_gt_list,
+            mouth_image_target=mouth_image_target,
+            camera=camera,
             use_mouth_distance=use_mouth_distance,
+            use_mouth_image_distance=use_mouth_image_distance,
             use_landmark_points=use_landmark_points,
         )
         print(
@@ -491,12 +676,21 @@ def train(
 
     lmk3d_gt_closed = torch.as_tensor(lmk3d_gt_closed, dtype=torch.float32, device=device)
     lmk3d_gt_open = torch.as_tensor(lmk3d_gt_open, dtype=torch.float32, device=device)
+    lmk2d_gt_closed = torch.as_tensor(lmk2d_gt_closed, dtype=torch.float32, device=device)
+    lmk2d_gt_open = torch.as_tensor(lmk2d_gt_open, dtype=torch.float32, device=device)
     lmk_mask_closed = torch.as_tensor(lmk_mask_closed, dtype=torch.bool, device=device)
     lmk_mask_open = torch.as_tensor(lmk_mask_open, dtype=torch.bool, device=device)
-    if lmk3d_gt_closed.shape[0] < 68 or lmk3d_gt_open.shape[0] < 68:
+    if (
+        lmk3d_gt_closed.shape[0] < 68 or lmk3d_gt_open.shape[0] < 68
+        or lmk2d_gt_closed.shape[0] < 68 or lmk2d_gt_open.shape[0] < 68
+    ):
         raise ValueError("当前主流程需要完整 68 点 landmark，以匹配 FLAME 动态轮廓点")
     lmk_gt_list = [lmk3d_gt_closed, lmk3d_gt_open]
+    lmk2d_gt_list = [lmk2d_gt_closed, lmk2d_gt_open]
     lmk_mask_list = [lmk_mask_closed, lmk_mask_open]
+    mouth_3d_target = _precompute_mouth_3d_targets(lmk_gt_list, lmk_mask_list)
+    semantic_target = _precompute_semantic_landmark_targets(lmk_gt_list, lmk_mask_list)
+    mouth_image_target = _precompute_mouth_image_targets(lmk2d_gt_list)
     ptcloud_closed_t = torch.as_tensor(ptcloud_closed, dtype=torch.float32, device=device)
     ptcloud_open_t = torch.as_tensor(ptcloud_open, dtype=torch.float32, device=device)
     ptcloud_face_closed_t = (
@@ -566,6 +760,7 @@ def train(
         point_cloud=0.1,
         point_plane=0.9,
         mouth_distance=10.0,
+        mouth_image_distance=1e-5,
         landmark_points=2.0,
         shape_reg=1e-6,
         expr_reg=1e-6,
@@ -573,7 +768,7 @@ def train(
 
     _sync_if_cuda(device)
     start_time = time.time()
-    tol_loss = 1e-10
+    tol_loss = 1e-9
 
     stage1_optimizer = torch.optim.Adam([pose_params, flame.head_pose, trans_params], lr=5e-3)
     _run_adam_stage(
@@ -586,7 +781,13 @@ def train(
         tol_loss=tol_loss,
         lmk_gt_list=lmk_gt_list,
         lmk_mask_list=lmk_mask_list,
+        mouth_3d_target=mouth_3d_target,
+        semantic_target=semantic_target,
+        lmk2d_gt_list=lmk2d_gt_list,
+        mouth_image_target=mouth_image_target,
+        camera=camera,
         use_mouth_distance=True,
+        use_mouth_image_distance=False,
         use_landmark_points=False,
         pose_allowed_indices=POSE_ALLOWED_NECK0_JAW0,
     )
@@ -605,7 +806,13 @@ def train(
         tol_loss=tol_loss,
         lmk_gt_list=lmk_gt_list,
         lmk_mask_list=lmk_mask_list,
-        use_mouth_distance=True,
+        mouth_3d_target=mouth_3d_target,
+        semantic_target=semantic_target,
+        lmk2d_gt_list=lmk2d_gt_list,
+        mouth_image_target=mouth_image_target,
+        camera=camera,
+        use_mouth_distance=False,
+        use_mouth_image_distance=True,
         use_landmark_points=True,
         pose_allowed_indices=POSE_ALLOWED_NECK0_JAW0,
     )
@@ -622,6 +829,7 @@ def train(
         )
         verts_final = _transform_vertices_batch(verts_model, rotations, translations)
         lmk_final = _transform_vertices_batch(lmk_model, rotations, translations)
+        lmk2d_final = _project_observation_points_to_image(lmk_final, camera)
         faces_np = flame.faces_tensor.detach().cpu().numpy()
         mesh_closed = trimesh.Trimesh(
             vertices=verts_final[0].cpu().numpy(), faces=faces_np, process=False
@@ -629,10 +837,14 @@ def train(
         mesh_open = trimesh.Trimesh(
             vertices=verts_final[1].cpu().numpy(), faces=faces_np, process=False
         )
+        mesh_closed.metadata["flame_landmarks_3d"] = lmk_final[0].detach().cpu().numpy()
+        mesh_open.metadata["flame_landmarks_3d"] = lmk_final[1].detach().cpu().numpy()
         _export_open_mouth_lmk_debug(
             "./output/open",
             lmk3d_gt_open.detach().cpu().numpy(),
             lmk_final[1].detach().cpu().numpy(),
+            gt2d_open=lmk2d_gt_open.detach().cpu().numpy(),
+            pred2d_open=lmk2d_final[1].detach().cpu().numpy(),
         )
 
     return mesh_closed, mesh_open

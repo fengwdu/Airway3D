@@ -163,9 +163,12 @@ def backprojection_inverse(points3d, camera):
     """
     points3d: [N, 3]
     """
-    X, Y, Z = points3d[:, 0], points3d[:, 1], points3d[:, 2]  # (N, )
+    X, Y, Z = points3d[..., 0], points3d[..., 1], points3d[..., 2]
     x = camera.fx * X / Z + camera.cx                   
     y = camera.fy * Y / Z + camera.cy
+    if hasattr(points3d, "detach"):
+        import torch
+        return torch.stack([x, y], dim=-1)
     return np.stack([x, y], axis=-1)
 
 def save_2D(points2D, save_dir):

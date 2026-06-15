@@ -17396,3 +17396,241 @@
  - type: class libobsensor::unrecoverable_exception
  - status: 113
 [06/05 21:48:31.355984][warning][44392][Pipeline.cpp:335] [AYZ81630069] Wait for frame timeout, you can try to increase the wait time! current timeout=100 [**32 logs in 3458ms, last: 21:48:31.284869**]
+[06/15 18:43:16.809912][info][10384][DeviceManager.cpp:25] Current found device(s): (1)
+[06/15 18:43:16.809932][info][10384][DeviceManager.cpp:34] 	- Name: Gemini 215, PID: 0x0808, SN/ID: AYZ81630069, Connection: USB3.0
+[06/15 18:43:16.809936][info][10384][DeviceManager.cpp:405] Enable net device enumeration: true
+[06/15 18:43:17.825471][info][10384][DeviceManager.cpp:25] Current device(s) list: (1)
+[06/15 18:43:17.825497][info][10384][DeviceManager.cpp:34] 	- Name: Gemini 215, PID: 0x0808, SN/ID: AYZ81630069, Connection: USB3.0
+[06/15 18:43:17.827336][warning][10384][PropertyServer.cpp:87] [AYZ81630069] Not added to property map, property not found in OBPropertyBaseInfoMap, id=108
+[06/15 18:43:17.827370][warning][10384][PropertyServer.cpp:87] [AYZ81630069] Not added to property map, property not found in OBPropertyBaseInfoMap, id=4035
+[06/15 18:43:17.937871][info][10384][DeviceManager.cpp:199] Device created successfully! Name: Gemini 215, PID: 0x0808, SN/ID: AYZ81630069 FW: 1.0.9
+[06/15 18:43:17.938309][info][10384][Pipeline.cpp:54] [AYZ81630069] Pipeline created with device: {name: Gemini 215, sn: AYZ81630069}, @0x2300A593580
+[06/15 18:43:17.959962][info][10384][G2DepthWorkModeManager.cpp:80] Device depth work mode have been switch to: Extended Distance Mode, device will be reinitialize to apply the new mode.
+[06/15 18:43:17.961718][warning][10384][PropertyServer.cpp:87] [AYZ81630069] Not added to property map, property not found in OBPropertyBaseInfoMap, id=108
+[06/15 18:43:17.961742][warning][10384][PropertyServer.cpp:87] [AYZ81630069] Not added to property map, property not found in OBPropertyBaseInfoMap, id=4035
+[06/15 18:43:18.101756][info][10384][Pipeline.cpp:228] [AYZ81630069] Check and set config done!
+[06/15 18:43:18.103524][info][10384][Pipeline.cpp:266] [AYZ81630069] Try to start streams!
+[06/15 18:43:18.103535][info][10384][VideoSensor.cpp:58] [AYZ81630069] Try to start stream: {type: Color, format: RGB, width: 1280, height: 720, fps: 30}
+[06/15 18:43:18.103666][info][10384][SensorBase.cpp:210] [AYZ81630069] Stream state changed from STOPPED to STARTING@Color
+[06/15 18:43:18.103676][info][10384][VideoSensor.cpp:127] [AYZ81630069] Start backend stream: {type: Color, format: BGR, width: 1280, height: 720, fps: 30}
+[06/15 18:43:18.201902][info][10384][VideoSensor.cpp:58] [AYZ81630069] Try to start stream: {type: Depth, format: Y16, width: 1280, height: 800, fps: 30}
+[06/15 18:43:18.201918][info][10384][SensorBase.cpp:210] [AYZ81630069] Stream state changed from STOPPED to STARTING@Depth
+[06/15 18:43:18.201932][info][10384][VideoSensor.cpp:127] [AYZ81630069] Start backend stream: {type: Depth, format: MJPG, width: 1280, height: 800, fps: 30}
+[06/15 18:43:18.210775][info][10384][Pipeline.cpp:293] [AYZ81630069] Start streams done!
+[06/15 18:43:18.210780][info][10384][Pipeline.cpp:250] [AYZ81630069] Pipeline start done!
+[06/15 18:43:18.311558][warning][10384][Pipeline.cpp:335] [AYZ81630069] Wait for frame timeout, you can try to increase the wait time! current timeout=100
+[06/15 18:43:18.328733][info][44120][SensorBase.cpp:210] [AYZ81630069] Stream state changed from STARTING to STREAMING@Depth
+[06/15 18:43:18.390064][info][32088][SensorBase.cpp:210] [AYZ81630069] Stream state changed from STARTING to STREAMING@Color
+[06/15 18:43:23.337522][info][32088][VideoSensor.cpp:153] [AYZ81630069] Depth backend frame callback, frameRate=30.145739fps
+[06/15 18:43:23.339412][info][24148][SensorBase.cpp:379] [AYZ81630069] Depth Streaming... frameRate=30.163803fps
+[06/15 18:43:23.395772][info][15244][VideoSensor.cpp:153] [AYZ81630069] Color backend frame callback, frameRate=29.770229fps
+[06/15 18:43:23.396467][info][11868][SensorBase.cpp:379] [AYZ81630069] Color Streaming... frameRate=29.776178fps
+[06/15 18:43:28.347548][info][21516][VideoSensor.cpp:153] [AYZ81630069] Depth backend frame callback, frameRate=29.940119fps
+[06/15 18:43:28.349569][info][24148][SensorBase.cpp:379] [AYZ81630069] Depth Streaming... frameRate=29.940119fps
+[06/15 18:43:28.405970][info][12676][VideoSensor.cpp:153] [AYZ81630069] Color backend frame callback, frameRate=29.940119fps
+[06/15 18:43:28.406609][info][11868][SensorBase.cpp:379] [AYZ81630069] Color Streaming... frameRate=29.940119fps
+[06/15 18:43:33.357534][info][3112][VideoSensor.cpp:153] [AYZ81630069] Depth backend frame callback, frameRate=29.940119fps
+[06/15 18:43:33.359467][info][24148][SensorBase.cpp:379] [AYZ81630069] Depth Streaming... frameRate=29.940119fps
+[06/15 18:43:33.416269][info][39956][VideoSensor.cpp:153] [AYZ81630069] Color backend frame callback, frameRate=29.934143fps
+[06/15 18:43:33.416959][info][11868][SensorBase.cpp:379] [AYZ81630069] Color Streaming... frameRate=29.934143fps
+[06/15 18:43:38.367490][info][21676][VideoSensor.cpp:153] [AYZ81630069] Depth backend frame callback, frameRate=29.940119fps
+[06/15 18:43:38.369547][info][24148][SensorBase.cpp:379] [AYZ81630069] Depth Streaming... frameRate=29.940119fps
+[06/15 18:43:38.426412][info][39956][VideoSensor.cpp:153] [AYZ81630069] Color backend frame callback, frameRate=29.940119fps
+[06/15 18:43:38.427044][info][11868][SensorBase.cpp:379] [AYZ81630069] Color Streaming... frameRate=29.940119fps
+[06/15 18:43:43.377678][info][44336][VideoSensor.cpp:153] [AYZ81630069] Depth backend frame callback, frameRate=29.940119fps
+[06/15 18:43:43.379612][info][24148][SensorBase.cpp:379] [AYZ81630069] Depth Streaming... frameRate=29.940119fps
+[06/15 18:43:43.435843][info][12676][VideoSensor.cpp:153] [AYZ81630069] Color backend frame callback, frameRate=29.946098fps
+[06/15 18:43:43.436554][info][11868][SensorBase.cpp:379] [AYZ81630069] Color Streaming... frameRate=29.946098fps
+[06/15 18:43:48.387849][info][18152][VideoSensor.cpp:153] [AYZ81630069] Depth backend frame callback, frameRate=29.940119fps
+[06/15 18:43:48.389806][info][24148][SensorBase.cpp:379] [AYZ81630069] Depth Streaming... frameRate=29.940119fps
+[06/15 18:43:48.446574][info][32088][VideoSensor.cpp:153] [AYZ81630069] Color backend frame callback, frameRate=29.934143fps
+[06/15 18:43:48.447289][info][11868][SensorBase.cpp:379] [AYZ81630069] Color Streaming... frameRate=29.934143fps
+[06/15 18:43:53.397713][info][45568][VideoSensor.cpp:153] [AYZ81630069] Depth backend frame callback, frameRate=29.940119fps
+[06/15 18:43:53.399944][info][24148][SensorBase.cpp:379] [AYZ81630069] Depth Streaming... frameRate=29.940119fps
+[06/15 18:43:53.456391][info][44336][VideoSensor.cpp:153] [AYZ81630069] Color backend frame callback, frameRate=29.940119fps
+[06/15 18:43:53.457083][info][11868][SensorBase.cpp:379] [AYZ81630069] Color Streaming... frameRate=29.940119fps
+[06/15 18:43:58.407672][info][45568][VideoSensor.cpp:153] [AYZ81630069] Depth backend frame callback, frameRate=29.940119fps
+[06/15 18:43:58.410067][info][24148][SensorBase.cpp:379] [AYZ81630069] Depth Streaming... frameRate=29.934143fps
+[06/15 18:43:58.466258][info][39956][VideoSensor.cpp:153] [AYZ81630069] Color backend frame callback, frameRate=29.940119fps
+[06/15 18:43:58.466914][info][11868][SensorBase.cpp:379] [AYZ81630069] Color Streaming... frameRate=29.946098fps
+[06/15 18:44:03.417988][info][30448][VideoSensor.cpp:153] [AYZ81630069] Depth backend frame callback, frameRate=29.934143fps
+[06/15 18:44:03.420507][info][24148][SensorBase.cpp:379] [AYZ81630069] Depth Streaming... frameRate=29.940119fps
+[06/15 18:44:03.476065][info][15244][VideoSensor.cpp:153] [AYZ81630069] Color backend frame callback, frameRate=29.940119fps
+[06/15 18:44:03.477242][info][11868][SensorBase.cpp:379] [AYZ81630069] Color Streaming... frameRate=29.934143fps
+[06/15 18:44:08.427856][info][44440][VideoSensor.cpp:153] [AYZ81630069] Depth backend frame callback, frameRate=29.946098fps
+[06/15 18:44:08.429749][info][24148][SensorBase.cpp:379] [AYZ81630069] Depth Streaming... frameRate=29.946098fps
+[06/15 18:44:08.491245][info][12676][VideoSensor.cpp:153] [AYZ81630069] Color backend frame callback, frameRate=27.916252fps
+[06/15 18:44:08.491922][info][11868][SensorBase.cpp:379] [AYZ81630069] Color Streaming... frameRate=27.921820fps
+[06/15 18:44:08.866356][warning][10384][Pipeline.cpp:335] [AYZ81630069] Wait for frame timeout, you can try to increase the wait time! current timeout=100
+[06/15 18:44:13.437943][info][39956][VideoSensor.cpp:153] [AYZ81630069] Depth backend frame callback, frameRate=29.540916fps
+[06/15 18:44:13.439981][info][24148][SensorBase.cpp:379] [AYZ81630069] Depth Streaming... frameRate=29.535023fps
+[06/15 18:44:13.503456][info][15244][VideoSensor.cpp:153] [AYZ81630069] Color backend frame callback, frameRate=28.930567fps
+[06/15 18:44:13.504163][info][11868][SensorBase.cpp:379] [AYZ81630069] Color Streaming... frameRate=28.924795fps
+[06/15 18:44:18.447845][info][41552][VideoSensor.cpp:153] [AYZ81630069] Depth backend frame callback, frameRate=29.940119fps
+[06/15 18:44:18.449952][info][24148][SensorBase.cpp:379] [AYZ81630069] Depth Streaming... frameRate=29.946098fps
+[06/15 18:44:18.512286][info][39956][VideoSensor.cpp:153] [AYZ81630069] Color backend frame callback, frameRate=29.946098fps
+[06/15 18:44:18.512987][info][11868][SensorBase.cpp:379] [AYZ81630069] Color Streaming... frameRate=29.946098fps
+[06/15 18:44:23.457888][info][44440][VideoSensor.cpp:153] [AYZ81630069] Depth backend frame callback, frameRate=29.940119fps
+[06/15 18:44:23.460104][info][24148][SensorBase.cpp:379] [AYZ81630069] Depth Streaming... frameRate=29.934143fps
+[06/15 18:44:23.522702][info][15244][VideoSensor.cpp:153] [AYZ81630069] Color backend frame callback, frameRate=29.940119fps
+[06/15 18:44:23.523349][info][11868][SensorBase.cpp:379] [AYZ81630069] Color Streaming... frameRate=29.940119fps
+[06/15 18:44:28.468080][info][19100][VideoSensor.cpp:153] [AYZ81630069] Depth backend frame callback, frameRate=29.934143fps
+[06/15 18:44:28.470356][info][24148][SensorBase.cpp:379] [AYZ81630069] Depth Streaming... frameRate=29.940119fps
+[06/15 18:44:28.532989][info][27800][VideoSensor.cpp:153] [AYZ81630069] Color backend frame callback, frameRate=29.934143fps
+[06/15 18:44:28.533676][info][11868][SensorBase.cpp:379] [AYZ81630069] Color Streaming... frameRate=29.940119fps
+[06/15 18:44:33.478068][info][32088][VideoSensor.cpp:153] [AYZ81630069] Depth backend frame callback, frameRate=29.940119fps
+[06/15 18:44:33.480232][info][24148][SensorBase.cpp:379] [AYZ81630069] Depth Streaming... frameRate=29.940119fps
+[06/15 18:44:33.544141][info][15244][VideoSensor.cpp:153] [AYZ81630069] Color backend frame callback, frameRate=29.934143fps
+[06/15 18:44:33.544877][info][11868][SensorBase.cpp:379] [AYZ81630069] Color Streaming... frameRate=29.934143fps
+[06/15 18:44:38.488059][info][39376][VideoSensor.cpp:153] [AYZ81630069] Depth backend frame callback, frameRate=29.940119fps
+[06/15 18:44:38.490336][info][24148][SensorBase.cpp:379] [AYZ81630069] Depth Streaming... frameRate=29.940119fps
+[06/15 18:44:38.553348][info][39376][VideoSensor.cpp:153] [AYZ81630069] Color backend frame callback, frameRate=29.946098fps
+[06/15 18:44:38.554009][info][11868][SensorBase.cpp:379] [AYZ81630069] Color Streaming... frameRate=29.940119fps
+[06/15 18:44:43.498106][info][15244][VideoSensor.cpp:153] [AYZ81630069] Depth backend frame callback, frameRate=29.940119fps
+[06/15 18:44:43.500299][info][24148][SensorBase.cpp:379] [AYZ81630069] Depth Streaming... frameRate=29.940119fps
+[06/15 18:44:43.563386][info][19100][VideoSensor.cpp:153] [AYZ81630069] Color backend frame callback, frameRate=29.940119fps
+[06/15 18:44:43.564077][info][11868][SensorBase.cpp:379] [AYZ81630069] Color Streaming... frameRate=29.940119fps
+[06/15 18:44:48.508151][info][19100][VideoSensor.cpp:153] [AYZ81630069] Depth backend frame callback, frameRate=29.940119fps
+[06/15 18:44:48.510350][info][24148][SensorBase.cpp:379] [AYZ81630069] Depth Streaming... frameRate=29.940119fps
+[06/15 18:44:48.573993][info][27800][VideoSensor.cpp:153] [AYZ81630069] Color backend frame callback, frameRate=29.934143fps
+[06/15 18:44:48.574697][info][11868][SensorBase.cpp:379] [AYZ81630069] Color Streaming... frameRate=29.940119fps
+[06/15 18:44:53.518333][info][18152][VideoSensor.cpp:153] [AYZ81630069] Depth backend frame callback, frameRate=29.940119fps
+[06/15 18:44:53.520432][info][24148][SensorBase.cpp:379] [AYZ81630069] Depth Streaming... frameRate=29.940119fps
+[06/15 18:44:53.584272][info][39376][VideoSensor.cpp:153] [AYZ81630069] Color backend frame callback, frameRate=29.940119fps
+[06/15 18:44:53.584930][info][11868][SensorBase.cpp:379] [AYZ81630069] Color Streaming... frameRate=29.940119fps
+[06/15 18:44:58.528339][info][912][VideoSensor.cpp:153] [AYZ81630069] Depth backend frame callback, frameRate=29.940119fps
+[06/15 18:44:58.530615][info][24148][SensorBase.cpp:379] [AYZ81630069] Depth Streaming... frameRate=29.940119fps
+[06/15 18:44:58.592740][info][10188][VideoSensor.cpp:153] [AYZ81630069] Color backend frame callback, frameRate=29.952078fps
+[06/15 18:44:58.593438][info][11868][SensorBase.cpp:379] [AYZ81630069] Color Streaming... frameRate=29.946098fps
+[06/15 18:45:03.538360][info][27800][VideoSensor.cpp:153] [AYZ81630069] Depth backend frame callback, frameRate=29.940119fps
+[06/15 18:45:03.540698][info][24148][SensorBase.cpp:379] [AYZ81630069] Depth Streaming... frameRate=29.940119fps
+[06/15 18:45:03.603989][info][39376][VideoSensor.cpp:153] [AYZ81630069] Color backend frame callback, frameRate=29.928171fps
+[06/15 18:45:03.604631][info][11868][SensorBase.cpp:379] [AYZ81630069] Color Streaming... frameRate=29.934143fps
+[06/15 18:45:08.548293][info][18152][VideoSensor.cpp:153] [AYZ81630069] Depth backend frame callback, frameRate=29.940119fps
+[06/15 18:45:08.550384][info][24148][SensorBase.cpp:379] [AYZ81630069] Depth Streaming... frameRate=29.940119fps
+[06/15 18:45:08.613138][info][44120][VideoSensor.cpp:153] [AYZ81630069] Color backend frame callback, frameRate=29.946098fps
+[06/15 18:45:08.613786][info][11868][SensorBase.cpp:379] [AYZ81630069] Color Streaming... frameRate=29.946098fps
+[06/15 18:45:13.558655][info][39376][VideoSensor.cpp:153] [AYZ81630069] Depth backend frame callback, frameRate=29.940119fps
+[06/15 18:45:13.560634][info][24148][SensorBase.cpp:379] [AYZ81630069] Depth Streaming... frameRate=29.940119fps
+[06/15 18:45:13.623765][info][27800][VideoSensor.cpp:153] [AYZ81630069] Color backend frame callback, frameRate=29.540916fps
+[06/15 18:45:13.624530][info][11868][SensorBase.cpp:379] [AYZ81630069] Color Streaming... frameRate=29.535023fps
+[06/15 18:45:18.568445][info][19100][VideoSensor.cpp:153] [AYZ81630069] Depth backend frame callback, frameRate=29.940119fps
+[06/15 18:45:18.570531][info][24148][SensorBase.cpp:379] [AYZ81630069] Depth Streaming... frameRate=29.940119fps
+[06/15 18:45:18.633873][info][30448][VideoSensor.cpp:153] [AYZ81630069] Color backend frame callback, frameRate=29.940119fps
+[06/15 18:45:18.634506][info][11868][SensorBase.cpp:379] [AYZ81630069] Color Streaming... frameRate=29.940119fps
+[06/15 18:45:23.578522][info][36708][VideoSensor.cpp:153] [AYZ81630069] Depth backend frame callback, frameRate=29.940119fps
+[06/15 18:45:23.580679][info][24148][SensorBase.cpp:379] [AYZ81630069] Depth Streaming... frameRate=29.940119fps
+[06/15 18:45:23.643563][info][12232][VideoSensor.cpp:153] [AYZ81630069] Color backend frame callback, frameRate=29.940119fps
+[06/15 18:45:23.644255][info][11868][SensorBase.cpp:379] [AYZ81630069] Color Streaming... frameRate=29.940119fps
+[06/15 18:45:24.782389][info][10384][Pipeline.cpp:367] [AYZ81630069] Try to stop pipeline!
+[06/15 18:45:24.782441][info][10384][Pipeline.cpp:343] [AYZ81630069] Try to stop streams!
+[06/15 18:45:24.782463][info][10384][SensorBase.cpp:210] [AYZ81630069] Stream state changed from STREAMING to STOPPING@Depth
+[06/15 18:45:24.863453][info][10384][SensorBase.cpp:210] [AYZ81630069] Stream state changed from STOPPING to STOPPED@Depth
+[06/15 18:45:24.864186][info][10384][Pipeline.cpp:357] [AYZ81630069] Sensor stream stopped, sensorType=Depth
+[06/15 18:45:24.864195][info][10384][SensorBase.cpp:210] [AYZ81630069] Stream state changed from STREAMING to STOPPING@Color
+[06/15 18:45:25.019681][info][10384][SensorBase.cpp:210] [AYZ81630069] Stream state changed from STOPPING to STOPPED@Color
+[06/15 18:45:25.020342][info][10384][Pipeline.cpp:357] [AYZ81630069] Sensor stream stopped, sensorType=Color
+[06/15 18:45:25.020346][info][10384][Pipeline.cpp:363] [AYZ81630069] Stop streams done!
+[06/15 18:45:25.020872][info][10384][Pipeline.cpp:392] [AYZ81630069] Stop pipeline done!
+[06/15 18:45:25.020902][info][10384][Pipeline.cpp:65] [AYZ81630069] Pipeline destroyed! @0x2300A593580
+[06/15 18:45:25.020967][info][10384][SensorBase.cpp:47] [AYZ81630069] SensorBase is destroyed
+[06/15 18:45:25.021018][info][10384][SensorBase.cpp:47] [AYZ81630069] SensorBase is destroyed
+[06/15 19:12:35.558408][info][42496][DeviceManager.cpp:25] Current found device(s): (1)
+[06/15 19:12:35.558429][info][42496][DeviceManager.cpp:34] 	- Name: Gemini 215, PID: 0x0808, SN/ID: AYZ81630069, Connection: USB3.0
+[06/15 19:12:35.558434][info][42496][DeviceManager.cpp:405] Enable net device enumeration: true
+[06/15 19:12:36.568794][info][42496][DeviceManager.cpp:25] Current device(s) list: (1)
+[06/15 19:12:36.568822][info][42496][DeviceManager.cpp:34] 	- Name: Gemini 215, PID: 0x0808, SN/ID: AYZ81630069, Connection: USB3.0
+[06/15 19:12:36.568953][warning][42496][PropertyServer.cpp:87] [AYZ81630069] Not added to property map, property not found in OBPropertyBaseInfoMap, id=108
+[06/15 19:12:36.568982][warning][42496][PropertyServer.cpp:87] [AYZ81630069] Not added to property map, property not found in OBPropertyBaseInfoMap, id=4035
+[06/15 19:12:36.679373][info][42496][DeviceManager.cpp:199] Device created successfully! Name: Gemini 215, PID: 0x0808, SN/ID: AYZ81630069 FW: 1.0.9
+[06/15 19:12:36.679411][info][42496][Pipeline.cpp:54] [AYZ81630069] Pipeline created with device: {name: Gemini 215, sn: AYZ81630069}, @0x25EBFAFDD30
+[06/15 19:12:36.771038][info][42496][Pipeline.cpp:228] [AYZ81630069] Check and set config done!
+[06/15 19:12:36.772512][info][42496][Pipeline.cpp:266] [AYZ81630069] Try to start streams!
+[06/15 19:12:36.772524][info][42496][VideoSensor.cpp:58] [AYZ81630069] Try to start stream: {type: Color, format: RGB, width: 1280, height: 720, fps: 30}
+[06/15 19:12:36.772531][info][42496][SensorBase.cpp:210] [AYZ81630069] Stream state changed from STOPPED to STARTING@Color
+[06/15 19:12:36.772537][info][42496][VideoSensor.cpp:127] [AYZ81630069] Start backend stream: {type: Color, format: BGR, width: 1280, height: 720, fps: 30}
+[06/15 19:12:36.861683][info][42496][VideoSensor.cpp:58] [AYZ81630069] Try to start stream: {type: Depth, format: Y16, width: 1280, height: 800, fps: 30}
+[06/15 19:12:36.861693][info][42496][SensorBase.cpp:210] [AYZ81630069] Stream state changed from STOPPED to STARTING@Depth
+[06/15 19:12:36.861702][info][42496][VideoSensor.cpp:127] [AYZ81630069] Start backend stream: {type: Depth, format: MJPG, width: 1280, height: 800, fps: 30}
+[06/15 19:12:36.868338][info][42496][Pipeline.cpp:293] [AYZ81630069] Start streams done!
+[06/15 19:12:36.868345][info][42496][Pipeline.cpp:250] [AYZ81630069] Pipeline start done!
+[06/15 19:12:36.955215][info][39192][SensorBase.cpp:210] [AYZ81630069] Stream state changed from STARTING to STREAMING@Depth
+[06/15 19:12:36.968674][warning][42496][Pipeline.cpp:335] [AYZ81630069] Wait for frame timeout, you can try to increase the wait time! current timeout=100
+[06/15 19:12:37.087071][info][43740][SensorBase.cpp:210] [AYZ81630069] Stream state changed from STARTING to STREAMING@Color
+[06/15 19:12:40.094495][warning][23080][Pipeline.cpp:335] [AYZ81630069] Wait for frame timeout, you can try to increase the wait time! current timeout=100 [**1 logs in 3125ms, last: 19:12:37.078808**]
+[06/15 19:12:41.964262][info][35388][VideoSensor.cpp:153] [AYZ81630069] Depth backend frame callback, frameRate=30.145739fps
+[06/15 19:12:41.966437][info][31984][SensorBase.cpp:379] [AYZ81630069] Depth Streaming... frameRate=30.157780fps
+[06/15 19:12:42.097690][info][8136][VideoSensor.cpp:153] [AYZ81630069] Color backend frame callback, frameRate=29.940119fps
+[06/15 19:12:42.098513][info][18544][SensorBase.cpp:379] [AYZ81630069] Color Streaming... frameRate=29.946098fps
+[06/15 19:12:46.974196][info][26656][VideoSensor.cpp:153] [AYZ81630069] Depth backend frame callback, frameRate=29.940119fps
+[06/15 19:12:46.976441][info][31984][SensorBase.cpp:379] [AYZ81630069] Depth Streaming... frameRate=29.940119fps
+[06/15 19:12:47.105527][info][17128][VideoSensor.cpp:153] [AYZ81630069] Color backend frame callback, frameRate=29.552717fps
+[06/15 19:12:47.106166][info][18544][SensorBase.cpp:379] [AYZ81630069] Color Streaming... frameRate=29.552717fps
+[06/15 19:12:51.984351][info][40460][VideoSensor.cpp:153] [AYZ81630069] Depth backend frame callback, frameRate=29.940119fps
+[06/15 19:12:51.986388][info][31984][SensorBase.cpp:379] [AYZ81630069] Depth Streaming... frameRate=29.940119fps
+[06/15 19:12:52.115329][info][39192][VideoSensor.cpp:153] [AYZ81630069] Color backend frame callback, frameRate=29.740517fps
+[06/15 19:12:52.116041][info][18544][SensorBase.cpp:379] [AYZ81630069] Color Streaming... frameRate=29.740517fps
+[06/15 19:12:56.994475][info][35388][VideoSensor.cpp:153] [AYZ81630069] Depth backend frame callback, frameRate=29.940119fps
+[06/15 19:12:56.996407][info][31984][SensorBase.cpp:379] [AYZ81630069] Depth Streaming... frameRate=29.940119fps
+[06/15 19:12:57.125866][info][43740][VideoSensor.cpp:153] [AYZ81630069] Color backend frame callback, frameRate=29.740517fps
+[06/15 19:12:57.126552][info][18544][SensorBase.cpp:379] [AYZ81630069] Color Streaming... frameRate=29.740517fps
+[06/15 19:12:59.031461][info][42496][Pipeline.cpp:367] [AYZ81630069] Try to stop pipeline!
+[06/15 19:12:59.031480][info][42496][Pipeline.cpp:343] [AYZ81630069] Try to stop streams!
+[06/15 19:12:59.031496][info][42496][SensorBase.cpp:210] [AYZ81630069] Stream state changed from STREAMING to STOPPING@Depth
+[06/15 19:12:59.120356][info][42496][SensorBase.cpp:210] [AYZ81630069] Stream state changed from STOPPING to STOPPED@Depth
+[06/15 19:12:59.121037][info][42496][Pipeline.cpp:357] [AYZ81630069] Sensor stream stopped, sensorType=Depth
+[06/15 19:12:59.121046][info][42496][SensorBase.cpp:210] [AYZ81630069] Stream state changed from STREAMING to STOPPING@Color
+[06/15 19:12:59.290750][info][42496][SensorBase.cpp:210] [AYZ81630069] Stream state changed from STOPPING to STOPPED@Color
+[06/15 19:12:59.291367][info][42496][Pipeline.cpp:357] [AYZ81630069] Sensor stream stopped, sensorType=Color
+[06/15 19:12:59.291371][info][42496][Pipeline.cpp:363] [AYZ81630069] Stop streams done!
+[06/15 19:12:59.291836][info][42496][Pipeline.cpp:392] [AYZ81630069] Stop pipeline done!
+[06/15 19:12:59.291855][info][42496][Pipeline.cpp:65] [AYZ81630069] Pipeline destroyed! @0x25EBFAFDD30
+[06/15 19:12:59.291920][info][42496][SensorBase.cpp:47] [AYZ81630069] SensorBase is destroyed
+[06/15 19:12:59.291966][info][42496][SensorBase.cpp:47] [AYZ81630069] SensorBase is destroyed
+[06/15 19:28:59.380280][info][24044][DeviceManager.cpp:25] Current found device(s): (1)
+[06/15 19:28:59.380307][info][24044][DeviceManager.cpp:34] 	- Name: Gemini 215, PID: 0x0808, SN/ID: AYZ81630069, Connection: USB3.0
+[06/15 19:28:59.380311][info][24044][DeviceManager.cpp:405] Enable net device enumeration: true
+[06/15 19:29:00.392798][info][24044][DeviceManager.cpp:25] Current device(s) list: (1)
+[06/15 19:29:00.392814][info][24044][DeviceManager.cpp:34] 	- Name: Gemini 215, PID: 0x0808, SN/ID: AYZ81630069, Connection: USB3.0
+[06/15 19:29:00.392889][warning][24044][PropertyServer.cpp:87] [AYZ81630069] Not added to property map, property not found in OBPropertyBaseInfoMap, id=108
+[06/15 19:29:00.392909][warning][24044][PropertyServer.cpp:87] [AYZ81630069] Not added to property map, property not found in OBPropertyBaseInfoMap, id=4035
+[06/15 19:29:00.503782][info][24044][DeviceManager.cpp:199] Device created successfully! Name: Gemini 215, PID: 0x0808, SN/ID: AYZ81630069 FW: 1.0.9
+[06/15 19:29:00.503820][info][24044][Pipeline.cpp:54] [AYZ81630069] Pipeline created with device: {name: Gemini 215, sn: AYZ81630069}, @0x2939BC3C980
+[06/15 19:29:00.601053][info][24044][Pipeline.cpp:228] [AYZ81630069] Check and set config done!
+[06/15 19:29:00.602208][info][24044][Pipeline.cpp:266] [AYZ81630069] Try to start streams!
+[06/15 19:29:00.602218][info][24044][VideoSensor.cpp:58] [AYZ81630069] Try to start stream: {type: Color, format: RGB, width: 1280, height: 720, fps: 30}
+[06/15 19:29:00.602225][info][24044][SensorBase.cpp:210] [AYZ81630069] Stream state changed from STOPPED to STARTING@Color
+[06/15 19:29:00.602231][info][24044][VideoSensor.cpp:127] [AYZ81630069] Start backend stream: {type: Color, format: BGR, width: 1280, height: 720, fps: 30}
+[06/15 19:29:00.689557][info][24044][VideoSensor.cpp:58] [AYZ81630069] Try to start stream: {type: Depth, format: Y16, width: 1280, height: 800, fps: 30}
+[06/15 19:29:00.689568][info][24044][SensorBase.cpp:210] [AYZ81630069] Stream state changed from STOPPED to STARTING@Depth
+[06/15 19:29:00.689577][info][24044][VideoSensor.cpp:127] [AYZ81630069] Start backend stream: {type: Depth, format: MJPG, width: 1280, height: 800, fps: 30}
+[06/15 19:29:00.695722][info][24044][Pipeline.cpp:293] [AYZ81630069] Start streams done!
+[06/15 19:29:00.695727][info][24044][Pipeline.cpp:250] [AYZ81630069] Pipeline start done!
+[06/15 19:29:00.805231][warning][24044][Pipeline.cpp:335] [AYZ81630069] Wait for frame timeout, you can try to increase the wait time! current timeout=100
+[06/15 19:29:00.862314][info][41004][SensorBase.cpp:210] [AYZ81630069] Stream state changed from STARTING to STREAMING@Depth
+[06/15 19:29:00.892921][info][5180][SensorBase.cpp:210] [AYZ81630069] Stream state changed from STARTING to STREAMING@Color
+[06/15 19:29:05.870728][info][41476][VideoSensor.cpp:153] [AYZ81630069] Depth backend frame callback, frameRate=30.151758fps
+[06/15 19:29:05.872885][info][41692][SensorBase.cpp:379] [AYZ81630069] Depth Streaming... frameRate=30.163803fps
+[06/15 19:29:05.905584][info][41004][VideoSensor.cpp:153] [AYZ81630069] Color backend frame callback, frameRate=30.121683fps
+[06/15 19:29:05.906801][info][37752][SensorBase.cpp:379] [AYZ81630069] Color Streaming... frameRate=30.133705fps
+[06/15 19:29:10.880721][info][11400][VideoSensor.cpp:153] [AYZ81630069] Depth backend frame callback, frameRate=28.942114fps
+[06/15 19:29:10.882816][info][41692][SensorBase.cpp:379] [AYZ81630069] Depth Streaming... frameRate=28.942114fps
+[06/15 19:29:10.912528][info][33636][VideoSensor.cpp:153] [AYZ81630069] Color backend frame callback, frameRate=28.160576fps
+[06/15 19:29:10.913162][info][37752][SensorBase.cpp:379] [AYZ81630069] Color Streaming... frameRate=28.160576fps
+[06/15 19:29:15.890975][info][33636][VideoSensor.cpp:153] [AYZ81630069] Depth backend frame callback, frameRate=29.934143fps
+[06/15 19:29:15.892924][info][41692][SensorBase.cpp:379] [AYZ81630069] Depth Streaming... frameRate=29.940119fps
+[06/15 19:29:15.922779][info][41240][VideoSensor.cpp:153] [AYZ81630069] Color backend frame callback, frameRate=29.940119fps
+[06/15 19:29:15.923751][info][37752][SensorBase.cpp:379] [AYZ81630069] Color Streaming... frameRate=29.940119fps
+[06/15 19:29:19.832552][info][24044][Pipeline.cpp:367] [AYZ81630069] Try to stop pipeline!
+[06/15 19:29:19.832569][info][24044][Pipeline.cpp:343] [AYZ81630069] Try to stop streams!
+[06/15 19:29:19.832580][info][24044][SensorBase.cpp:210] [AYZ81630069] Stream state changed from STREAMING to STOPPING@Depth
+[06/15 19:29:19.920018][info][24044][SensorBase.cpp:210] [AYZ81630069] Stream state changed from STOPPING to STOPPED@Depth
+[06/15 19:29:19.920683][info][24044][Pipeline.cpp:357] [AYZ81630069] Sensor stream stopped, sensorType=Depth
+[06/15 19:29:19.920694][info][24044][SensorBase.cpp:210] [AYZ81630069] Stream state changed from STREAMING to STOPPING@Color
+[06/15 19:29:20.084762][info][24044][SensorBase.cpp:210] [AYZ81630069] Stream state changed from STOPPING to STOPPED@Color
+[06/15 19:29:20.085413][info][24044][Pipeline.cpp:357] [AYZ81630069] Sensor stream stopped, sensorType=Color
+[06/15 19:29:20.085416][info][24044][Pipeline.cpp:363] [AYZ81630069] Stop streams done!
+[06/15 19:29:20.085898][info][24044][Pipeline.cpp:392] [AYZ81630069] Stop pipeline done!
+[06/15 19:29:20.085918][info][24044][Pipeline.cpp:65] [AYZ81630069] Pipeline destroyed! @0x2939BC3C980
+[06/15 19:29:20.085991][info][24044][SensorBase.cpp:47] [AYZ81630069] SensorBase is destroyed
+[06/15 19:29:20.086037][info][24044][SensorBase.cpp:47] [AYZ81630069] SensorBase is destroyed

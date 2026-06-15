@@ -27,6 +27,8 @@ LMK = {
     "nose_tip": 33,
     "upper_lip": 51,
     "lower_lip": 57,
+    "inner_upper_lip": 62,
+    "inner_lower_lip": 66,
 }
 
 def angle_between(v1, v2):
@@ -80,6 +82,15 @@ def metrics_calculate(mesh_closed, mesh_open, adam_3d, lmk3d_closed, lmk3d_open)
     def get_lmk(L, key):
         return L[int(LMK[key])]
 
+    def get_flame_lmk(mesh, key):
+        landmarks = mesh.metadata.get("flame_landmarks_3d")
+        if landmarks is None:
+            return None
+        landmarks = np.asarray(landmarks, dtype=np.float64)
+        if landmarks.shape[0] <= int(LMK[key]):
+            return None
+        return landmarks[int(LMK[key])]
+
     def get_brow(L):
         return 0.5 * (get_lmk(L, "brow_L") + get_lmk(L, "brow_R"))
 
@@ -132,8 +143,13 @@ def metrics_calculate(mesh_closed, mesh_open, adam_3d, lmk3d_closed, lmk3d_open)
     head_tilt_angle = angle_between(a_vec, b_vec)
 
     # [2] 张口度
-    # 张口度 = |上唇-下唇|_open - |上唇-下唇|_close
-    mouth_opening = np.linalg.norm(upper_o - lower_o) - np.linalg.norm(upper_c - lower_c)
+    # 张口度 = 张口帧 FLAME 内唇中点 fitted landmark 距离。
+    flame_upper_o = get_flame_lmk(mesh_open, "inner_upper_lip")
+    flame_lower_o = get_flame_lmk(mesh_open, "inner_lower_lip")
+    if flame_upper_o is not None and flame_lower_o is not None:
+        mouth_opening = np.linalg.norm(to_cm(flame_upper_o) - to_cm(flame_lower_o))
+    else:
+        mouth_opening = np.linalg.norm(upper_o - lower_o)
 
     # [3] 甲颏距离
     # 闭口位 下巴尖 → 喉结
